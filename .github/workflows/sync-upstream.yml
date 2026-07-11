@@ -1,0 +1,55 @@
+# Keeps this copy in sync with the original project (ahXN00/OwnTV).
+# Runs weekly and on demand (Actions tab -> "Sync upstream (OwnTV)" -> Run workflow).
+# On a clean merge it pushes to the default branch and kicks off an APK build;
+# on a conflict it fails loudly so the merge can be resolved manually.
+name: Sync upstream (OwnTV)
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'   # Mondays 04:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write   # push the merge commit
+  actions: write    # dispatch android.yml after a sync (GITHUB_TOKEN pushes don't auto-trigger it)
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      # schedule + workflow_dispatch both run against the default branch
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge upstream ahXN00/OwnTV
+        id: merge
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/ahXN00/OwnTV.git
+          git fetch upstream main
+          BEFORE=$(git rev-parse HEAD)
+          if ! git merge --no-edit upstream/main; then
+            git merge --abort
+            echo "::error::Merge conflict with upstream ahXN00/OwnTV — fetch and merge manually to resolve."
+            exit 1
+          fi
+          if [ "$(git rev-parse HEAD)" = "$BEFORE" ]; then
+            echo "Already up to date with upstream."
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+          else
+            git push origin "HEAD:$GITHUB_REF_NAME"
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build the updated APK
+        if: steps.merge.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run android.yml --ref "$GITHUB_REF_NAME"
