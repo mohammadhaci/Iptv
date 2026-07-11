@@ -1,3 +1,7 @@
+> 🇸🇦 **الدليل بالعربية — التثبيت على Fire TV وإعداد اشتراك Xtream: [README.ar.md](README.ar.md)**
+>
+> This repository is a copy of [ahXN00/OwnTV](https://github.com/ahXN00/OwnTV) (GPLv3), with an added Arabic setup guide.
+
 <p align="center">
   <img src="extras/logo.png" alt="OwnTV" width="360">
 </p>
