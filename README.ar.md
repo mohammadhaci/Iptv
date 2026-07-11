@@ -102,6 +102,33 @@ https://github.com/ahXN00/OwnTV/releases/latest/download/OwnTV.apk
 
 ---
 
+## 🌐 موقع التحميل + تطبيق الايفون
+
+المستودع ينشر تلقائيًا موقعًا على GitHub Pages (مجلد `site/`):
+
+- **صفحة التحميل**: <https://mohammadhaci.github.io/Iptv/> — افتحها بتطبيق Downloader على Fire TV واضغط زر التحميل
+- **تطبيق الايفون (ويب)**: <https://mohammadhaci.github.io/Iptv/app/> — مشغّل Xtream خفيف يعمل بالمتصفح: قنوات مباشرة + أفلام + مسلسلات + مفضلة، ويُثبَّت على الشاشة الرئيسية (Safari ← زر المشاركة ← **Add to Home Screen**)
+
+> **ملاحظة للايفون:** Safari يمنع تشغيل بث `http` من صفحة `https` (mixed content). إذا سيرفر
+> اشتراكك ما بيدعم https، استضف الموقع على نطاقك عبر http أو استخدم بروكسي CORS من
+> الإعدادات المتقدمة بشاشة الدخول. الأفلام بصيغة MKV غير مدعومة على الايفون (قيود Safari نفسها).
+
+### ربط الموقع بسبدومين على استضافتك (Hostinger)
+
+طريقتان — اختر الأسهل لك:
+
+**أ. توجيه DNS إلى GitHub Pages (يبقى الموقع يتحدث تلقائيًا):**
+1. من hPanel: **Domains ← DNS / Name Servers**
+2. أضف سجل **CNAME**: الاسم `tv` (أو أي اسم سبدومين تريده) → القيمة `mohammadhaci.github.io`
+3. من GitHub: **Settings ← Pages ← Custom domain** واكتب `tv.yourdomain.com` وفعّل **Enforce HTTPS**
+
+**ب. رفع الملفات مباشرة على Hostinger:**
+1. من hPanel أنشئ السبدومين (**Domains ← Subdomains**)
+2. نزّل مجلد `site/` من هذا المستودع وارفع محتواه لمجلد السبدومين عبر File Manager
+3. (لهذه الطريقة يلزم إعادة الرفع يدويًا عند أي تحديث)
+
+---
+
 ## 📦 نسخة APK من مستودعك أنت (تلقائي)
 
 هذا المستودع فيه GitHub Actions جاهز: **كل تعديل بتدفعه بيبني APK تلقائيًا**.

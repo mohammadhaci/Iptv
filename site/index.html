@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OwnTV — مشغّل IPTV</title>
+<meta name="description" content="تحميل مشغّل OwnTV لأجهزة Fire TV و Android TV، وتشغيله على الايفون كتطبيق ويب">
+<link rel="icon" href="app/icons/icon-192.png">
+<style>
+  :root{
+    --bg:#0d161e; --card:#13202b; --card2:#182835; --teal:#26c6da; --teal-dark:#1a99aa;
+    --text:#eaf2f7; --muted:#8fa6b5; --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 48px}
+  .logo{width:96px;height:96px;border-radius:24px;margin:24px auto 12px;display:block;box-shadow:0 8px 40px rgba(38,198,218,.25)}
+  h1{font-size:2rem;text-align:center}
+  .tag{color:var(--muted);text-align:center;margin:8px 0 32px;font-size:1.05rem;line-height:1.7}
+  .cards{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;max-width:900px;width:100%}
+  .card{background:var(--card);border:1px solid #1f3242;border-radius:var(--radius);padding:28px 24px;flex:1 1 340px;max-width:420px;display:flex;flex-direction:column;gap:14px}
+  .card h2{font-size:1.3rem;display:flex;align-items:center;gap:10px}
+  .card p{color:var(--muted);line-height:1.8;font-size:.97rem}
+  .btn{display:block;text-align:center;text-decoration:none;font-weight:700;font-size:1.1rem;padding:15px 18px;border-radius:14px;margin-top:auto;transition:transform .12s ease, box-shadow .12s ease}
+  .btn:active{transform:scale(.98)}
+  .btn-teal{background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:#04252b;box-shadow:0 6px 24px rgba(38,198,218,.35)}
+  .btn-outline{border:2px solid var(--teal);color:var(--teal)}
+  .steps{background:var(--card2);border-radius:12px;padding:14px 16px;font-size:.92rem;color:var(--muted);line-height:2}
+  .steps b{color:var(--text)}
+  code{background:#0a1219;border:1px solid #1f3242;border-radius:8px;padding:3px 8px;font-size:.85rem;color:var(--teal);direction:ltr;display:inline-block;word-break:break-all}
+  .note{max-width:900px;color:var(--muted);font-size:.85rem;text-align:center;margin-top:36px;line-height:1.9}
+  .note a{color:var(--teal);text-decoration:none}
+</style>
+</head>
+<body>
+  <img class="logo" src="app/icons/icon-512.png" alt="OwnTV">
+  <h1>OwnTV — مشغّل IPTV</h1>
+  <p class="tag">شغّل اشتراك Xtream أو قوائم M3U الخاصة بك — بجودة 4K وبدون إعلانات<br>المشغّل لا يوفّر أي قنوات أو محتوى؛ أنت تضيف اشتراكك الخاص.</p>
+
+  <div class="cards">
+    <div class="card">
+      <h2>📺 على Fire TV / Android TV</h2>
+      <p>التطبيق الكامل: بث مباشر وأفلام ومسلسلات، دليل قنوات EPG، مشاهدة ما فات، محرّكا تشغيل، ودعم 4K HDR.</p>
+      <div class="steps">
+        <b>على Fire TV:</b><br>
+        1. فعّل <b>Apps from Unknown Sources</b> من إعدادات الجهاز<br>
+        2. نزّل تطبيق <b>Downloader</b> من متجر أمازون<br>
+        3. افتح فيه رابط هذه الصفحة واضغط زر التحميل
+      </div>
+      <a class="btn btn-teal" href="https://github.com/ahXN00/OwnTV/releases/latest/download/OwnTV.apk">⬇️ تحميل التطبيق (APK)</a>
+    </div>
+
+    <div class="card">
+      <h2>📱 على الايفون / الايباد</h2>
+      <p>نسخة ويب خفيفة تعمل بالمتصفح: سجّل دخولك ببيانات Xtream وشاهد القنوات والأفلام مباشرة، وأضفها لشاشتك الرئيسية كتطبيق.</p>
+      <div class="steps">
+        <b>للتثبيت على الشاشة الرئيسية:</b><br>
+        1. افتح التطبيق بمتصفح Safari<br>
+        2. اضغط زر المشاركة <b>⎋</b> أسفل الشاشة<br>
+        3. اختر <b>Add to Home Screen</b>
+      </div>
+      <a class="btn btn-outline" href="app/">▶️ فتح تطبيق الويب</a>
+    </div>
+  </div>
+
+  <p class="note">
+    مشروع مفتوح المصدر مرخّص GPLv3 — المشغّل الأصلي: <a href="https://github.com/ahXN00/OwnTV">OwnTV</a>
+    · المستودع: <a href="https://github.com/mohammadhaci/Iptv">mohammadhaci/Iptv</a>
+    · <a href="https://github.com/mohammadhaci/Iptv/blob/claude/iptv-player-fire-tv-jnjwkn/README.ar.md">الدليل الكامل بالعربية</a>
+  </p>
+</body>
+</html>
