@@ -1,5 +1,23 @@
 # Changelog
 
+## v4.1.1 — unreleased
+
+### ✨ Improvements
+
+- **Deleting a playlist now shows its progress.** Removing a source with a huge catalog
+  (hundreds of thousands of channels/movies/episodes) can take a while — the source row in
+  **Settings → Manage sources** now shows a "DELETING…" badge with a spinner until the removal
+  finishes, and the row's Edit/Re-sync/Delete buttons are hidden meanwhile so it can't be
+  touched mid-delete. The removal also now always runs to completion even if you leave the
+  Settings screen while it's working.
+
+### 🔧 Under the hood
+
+- **Sync engine split into per-source-type modules.** The single large `SyncManager` was split
+  into a thin dispatcher plus `XtreamSyncer`, `M3uSyncer` and a shared `SyncSupport` toolbox
+  (chunked inserts, stable upserts, category refresh, pruning) — groundwork for the upcoming
+  Stalker portal source type. No behavior change; import/sync logic and logging are identical.
+
 ## v4.1.0 — 2026-07-11
 
 ### ✨ New features

@@ -497,13 +497,28 @@ class SettingsViewModel(
         catalogSyncScheduler.cancelSync(source.id)
     }
 
+    // Deleting a huge source (hundreds of thousands of cascaded rows) takes a while — surface it
+    // per-row so the user can see the removal is in progress instead of a silently frozen list.
+    private val _deletingSourceIds = MutableStateFlow<Set<Long>>(emptySet())
+    val deletingSourceIds: StateFlow<Set<Long>> = _deletingSourceIds.asStateFlow()
+
     fun delete(source: SourceEntity) {
+        if (source.id in _deletingSourceIds.value) return
         viewModelScope.launch {
             Log.d(TAG, "delete sourceId=${source.id}")
-            catalogSyncScheduler.cancelSync(source.id)
-            sourceRepository.deleteSource(source)
-            if (defaultSourceId.value == source.id) settings.setDefaultSource(-1L)
-            refreshActiveTvHome(allowBrowsableRequest = true)
+            _deletingSourceIds.value = _deletingSourceIds.value + source.id
+            try {
+                catalogSyncScheduler.cancelSync(source.id)
+                // NonCancellable: once confirmed, finish the cascade even if the user leaves the
+                // screen mid-delete — an interrupted half-deleted source is worse than a short wait.
+                withContext(NonCancellable) {
+                    sourceRepository.deleteSource(source)
+                    if (defaultSourceId.value == source.id) settings.setDefaultSource(-1L)
+                    refreshActiveTvHome(allowBrowsableRequest = true)
+                }
+            } finally {
+                _deletingSourceIds.value = _deletingSourceIds.value - source.id
+            }
         }
     }
 

@@ -60,6 +60,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val progress by vm.progress.collectAsStateWithLifecycle()
     val playlistAutoRefresh by vm.playlistAutoRefresh.collectAsStateWithLifecycle()
     val defaultId by vm.defaultSourceId.collectAsStateWithLifecycle()
+    val deletingIds by vm.deletingSourceIds.collectAsStateWithLifecycle()
     val epgSync by vm.epgSync.collectAsStateWithLifecycle()
     val colors = OwnTVTheme.colors
 
@@ -202,6 +203,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                         isDefault = isDefault,
                         counts = counts,
                         syncState = syncState,
+                        isDeleting = source.id in deletingIds,
                         onEdit = { editingSource = source },
                         onResync = { vm.resync(source) },
                         onCancelSync = { vm.cancelResync(source) },
@@ -229,6 +231,7 @@ private fun SourceRow(
     isDefault: Boolean,
     counts: SyncCounts?,
     syncState: CatalogSyncState,
+    isDeleting: Boolean,
     onEdit: () -> Unit,
     onResync: () -> Unit,
     onCancelSync: () -> Unit,
@@ -248,6 +251,15 @@ private fun SourceRow(
                     Spacer(Modifier.width(8.dp))
                     Text(
                         "DEFAULT",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = colors.onPrimaryContainer,
+                        modifier = Modifier.clip(RoundedCornerShape(6.dp)).background(colors.primaryContainer).padding(horizontal = 8.dp, vertical = 2.dp),
+                    )
+                }
+                if (isDeleting) {
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "DELETING…",
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.onPrimaryContainer,
                         modifier = Modifier.clip(RoundedCornerShape(6.dp)).background(colors.primaryContainer).padding(horizontal = 8.dp, vertical = 2.dp),
@@ -278,15 +290,24 @@ private fun SourceRow(
             )
         }
         Spacer(Modifier.width(12.dp))
-        OwnTVButton("Edit", onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
-        Spacer(Modifier.width(10.dp))
-        if (syncState.isActive) {
-            OwnTVButton("Cancel", onClick = onCancelSync, style = OwnTVButtonStyle.SECONDARY)
+        if (isDeleting) {
+            // Removing a huge source cascades through hundreds of thousands of rows — show that the
+            // removal is running and take the row's actions away so it can't be edited/re-synced/
+            // deleted again mid-delete.
+            OwnTVSpinner(sizeDp = 22)
+            Spacer(Modifier.width(10.dp))
+            Text("Removing…", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         } else {
-            OwnTVButton("Re-sync", onClick = onResync, style = OwnTVButtonStyle.SECONDARY)
+            OwnTVButton("Edit", onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
+            Spacer(Modifier.width(10.dp))
+            if (syncState.isActive) {
+                OwnTVButton("Cancel", onClick = onCancelSync, style = OwnTVButtonStyle.SECONDARY)
+            } else {
+                OwnTVButton("Re-sync", onClick = onResync, style = OwnTVButtonStyle.SECONDARY)
+            }
+            Spacer(Modifier.width(10.dp))
+            OwnTVButton("Delete", onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
         }
-        Spacer(Modifier.width(10.dp))
-        OwnTVButton("Delete", onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
     }
 }
 
