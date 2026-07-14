@@ -651,7 +651,7 @@ class SettingsRepository(private val context: Context) {
 
     val accent: Flow<AccentColor> = context.dataStore.data.map { prefs ->
         prefs[Keys.ACCENT]?.let { runCatching { AccentColor.valueOf(it) }.getOrNull() }
-            ?: AccentColor.TEAL
+            ?: AccentColor.SILVER
     }
 
     /** Picking a preset clears any custom accent so the preset takes effect. */

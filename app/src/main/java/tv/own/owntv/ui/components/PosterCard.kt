@@ -50,8 +50,8 @@ fun PosterCard(
         modifier = modifier.onFocusChanged { if (it.hasFocus) onFocus() },
         selected = selected,
         shape = RoundedCornerShape(Dimens.PosterCardCorner),
-        focusedScale = 1.06f,
-        glowElevation = 14,
+        focusedScale = 1.10f,
+        glowElevation = 24,
         focusedContainerColor = colors.surfaceContainerHigh,
         unfocusedContainerColor = colors.surfaceContainerHigh,
         selectedContainerColor = colors.surfaceContainerHigh,
@@ -135,10 +135,11 @@ fun PosterCard(
                 }
             }
             Spacer(Modifier.height(Dimens.PosterPadding))
+            // tvOS-style: titles rest muted and brighten to full white on focus (accent stays out of it).
             Text(
                 title,
                 style = MaterialTheme.typography.labelLarge,
-                color = if (focused) colors.primary else colors.onSurface,
+                color = if (focused) colors.onSurface else colors.onSurfaceVariant,
                 maxLines = 2,
                 minLines = 2,
                 overflow = TextOverflow.Ellipsis,

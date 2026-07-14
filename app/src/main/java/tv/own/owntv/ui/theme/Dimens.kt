@@ -29,8 +29,8 @@ object Dimens {
     val GapLarge = 24.dp
 
     // Poster tiles (PosterCard) — values match the shipped look exactly; centralized for tuning.
-    val PosterCardCorner = 14.dp
-    val PosterArtCorner = 10.dp
+    val PosterCardCorner = 18.dp
+    val PosterArtCorner = 14.dp
     val PosterPadding = 6.dp
     val PosterProgressHeight = 4.dp
 

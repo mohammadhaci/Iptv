@@ -1,17 +1,15 @@
-# Keeps this copy in sync with the original project (ahXN00/OwnTV).
-# Runs weekly and on demand (Actions tab -> "Sync upstream (OwnTV)" -> Run workflow).
-# On a clean merge it pushes to the default branch and kicks off an APK build;
-# on a conflict it fails loudly so the merge can be resolved manually.
-name: Sync upstream (OwnTV)
+# MANUAL-ONLY upstream sync. This app has intentionally diverged from ahXN00/OwnTV
+# (own UI styling, own release line) — nothing is pulled automatically anymore.
+# If you ever want to bring in upstream changes, run this from the Actions tab and
+# be ready to resolve conflicts with our UI customizations.
+name: Sync upstream (manual)
 
 on:
-  schedule:
-    - cron: '0 4 * * 1'   # Mondays 04:00 UTC
   workflow_dispatch:
 
 permissions:
   contents: write   # push the merge commit
-  actions: write    # dispatch android.yml after a sync (GITHUB_TOKEN pushes don't auto-trigger it)
+  actions: write    # dispatch android.yml after a sync
 
 concurrency:
   group: sync-upstream
@@ -21,7 +19,6 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      # schedule + workflow_dispatch both run against the default branch
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -48,32 +45,10 @@ jobs:
             echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      # --repo is required on every gh call: the checkout has an "upstream" remote,
-      # which gh would otherwise resolve as the target repo (403 on dispatch).
+      # --repo is required: the checkout has an "upstream" remote, which gh would
+      # otherwise resolve as the target repo (403 on dispatch).
       - name: Build the updated APK
         if: steps.merge.outputs.pushed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run android.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME"
-
-      # When upstream publishes an official release, mirror its tag here so android.yml
-      # builds and publishes this fork's own signed release — which the installed app's
-      # in-app updater (pointed at this repo) then offers on the TV.
-      - name: Mirror upstream release tag
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          LATEST=$(gh api repos/ahXN00/OwnTV/releases/latest --jq .tag_name || true)
-          if [ -z "$LATEST" ]; then
-            echo "Could not read upstream latest release — skipping."
-            exit 0
-          fi
-          if git ls-remote --exit-code --tags origin "refs/tags/$LATEST" >/dev/null 2>&1; then
-            echo "Tag $LATEST already exists here — nothing to do."
-            exit 0
-          fi
-          echo "Mirroring upstream release $LATEST"
-          git tag "$LATEST"
-          git push origin "refs/tags/$LATEST"
-          # Tag pushes made with GITHUB_TOKEN don't auto-trigger workflows — dispatch explicitly.
-          gh workflow run android.yml --repo "$GITHUB_REPOSITORY" --ref "refs/tags/$LATEST"

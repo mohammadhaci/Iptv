@@ -55,6 +55,13 @@ enum class AccentColor(
         primaryContainerDark = Color(0xFF624000), onPrimaryContainerDark = Color(0xFFFFDDB3),
         primaryLight = Color(0xFF8A5100), onPrimaryLight = Color(0xFFFFFFFF),
         primaryContainerLight = Color(0xFFFFDDB3), onPrimaryContainerLight = Color(0xFF2C1600),
+    ),
+    SILVER(
+        "Silver",
+        primaryDark = Color(0xFFE8EAED), onPrimaryDark = Color(0xFF1B1D21),
+        primaryContainerDark = Color(0xFF3A3F46), onPrimaryContainerDark = Color(0xFFF1F3F5),
+        primaryLight = Color(0xFF54595F), onPrimaryLight = Color(0xFFFFFFFF),
+        primaryContainerLight = Color(0xFFE0E3E8), onPrimaryContainerLight = Color(0xFF16181B),
     );
 
     fun primary(isDark: Boolean) = if (isDark) primaryDark else primaryLight

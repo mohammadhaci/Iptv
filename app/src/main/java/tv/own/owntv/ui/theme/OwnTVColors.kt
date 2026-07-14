@@ -139,8 +139,9 @@ fun ownTvColors(isDark: Boolean, accent: AccentColor, customAccent: String = "")
             onTertiary = DarkOnTertiary,
             tertiaryContainer = DarkTertiaryContainer,
             onTertiaryContainer = DarkOnTertiaryContainer,
-            focusBorder = primary,
-            focusGlow = primary.copy(alpha = 0.40f),
+            // tvOS-style focus: a white ring with a soft neutral lift shadow, independent of accent.
+            focusBorder = Color.White,
+            focusGlow = Color.Black.copy(alpha = 0.55f),
             favorite = DarkError,
         )
     } else {

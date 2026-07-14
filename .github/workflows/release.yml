@@ -1,0 +1,46 @@
+# Push-button release for OwnTV+. Run from the Actions tab with a version number
+# (e.g. 4.2.0): tags the current default-branch HEAD as v<version> and dispatches
+# the Android CI build on that tag, which publishes the signed APK as a GitHub
+# Release — the installed app's in-app updater then offers it on the TV.
+name: Release OwnTV+
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g. 4.2.0) — must be higher than the last release"
+        required: true
+        type: string
+
+permissions:
+  contents: write   # push the tag
+  actions: write    # dispatch android.yml on the tag
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Tag and dispatch build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          if ! echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Version must look like 4.2.0 (numbers only, MAJOR.MINOR.PATCH)."
+            exit 1
+          fi
+          TAG="v$VERSION"
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error::Tag $TAG already exists — pick a higher version."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "refs/tags/$TAG"
+          # Tag pushes made with GITHUB_TOKEN don't auto-trigger workflows — dispatch explicitly.
+          gh workflow run android.yml --repo "$GITHUB_REPOSITORY" --ref "refs/tags/$TAG"
+          echo "Release $TAG started — the signed APK will appear under Releases in ~7 minutes."
