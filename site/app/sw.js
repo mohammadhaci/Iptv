@@ -1,6 +1,6 @@
 /* OwnTV Web — service worker: cache the app shell only.
    API calls and video streams always go straight to the network. */
-const CACHE = 'owntv-web-v1';
+const CACHE = 'owntv-web-v2';
 const SHELL = [
   './',
   'index.html',

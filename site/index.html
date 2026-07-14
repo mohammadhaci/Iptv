@@ -8,64 +8,140 @@
 <link rel="icon" href="app/icons/icon-192.png">
 <style>
   :root{
-    --bg:#0d161e; --card:#13202b; --card2:#182835; --teal:#26c6da; --teal-dark:#1a99aa;
-    --text:#eaf2f7; --muted:#8fa6b5; --radius:18px;
+    --bg:#07090d; --ink:#f2f5f8; --muted:#9aa7b3; --hairline:rgba(255,255,255,.08);
+    --glass:rgba(255,255,255,.05); --glass-2:rgba(255,255,255,.08);
+    --teal:#2dd4e6; --teal-deep:#0e7c8c;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 48px}
-  .logo{width:96px;height:96px;border-radius:24px;margin:24px auto 12px;display:block;box-shadow:0 8px 40px rgba(38,198,218,.25)}
-  h1{font-size:2rem;text-align:center}
-  .tag{color:var(--muted);text-align:center;margin:8px 0 32px;font-size:1.05rem;line-height:1.7}
-  .cards{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;max-width:900px;width:100%}
-  .card{background:var(--card);border:1px solid #1f3242;border-radius:var(--radius);padding:28px 24px;flex:1 1 340px;max-width:420px;display:flex;flex-direction:column;gap:14px}
-  .card h2{font-size:1.3rem;display:flex;align-items:center;gap:10px}
-  .card p{color:var(--muted);line-height:1.8;font-size:.97rem}
-  .btn{display:block;text-align:center;text-decoration:none;font-weight:700;font-size:1.1rem;padding:15px 18px;border-radius:14px;margin-top:auto;transition:transform .12s ease, box-shadow .12s ease}
-  .btn:active{transform:scale(.98)}
-  .btn-teal{background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:#04252b;box-shadow:0 6px 24px rgba(38,198,218,.35)}
-  .btn-outline{border:2px solid var(--teal);color:var(--teal)}
-  .steps{background:var(--card2);border-radius:12px;padding:14px 16px;font-size:.92rem;color:var(--muted);line-height:2}
-  .steps b{color:var(--text)}
-  code{background:#0a1219;border:1px solid #1f3242;border-radius:8px;padding:3px 8px;font-size:.85rem;color:var(--teal);direction:ltr;display:inline-block;word-break:break-all}
-  .note{max-width:900px;color:var(--muted);font-size:.85rem;text-align:center;margin-top:36px;line-height:1.9}
-  .note a{color:var(--teal);text-decoration:none}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Tahoma,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  /* cinematic aurora backdrop */
+  .aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(45,212,230,.14), transparent 60%),
+    radial-gradient(900px 500px at 10% 0%, rgba(99,102,241,.12), transparent 60%),
+    radial-gradient(1000px 700px at 50% 110%, rgba(14,124,140,.16), transparent 60%),
+    var(--bg);}
+  .aurora::after{content:"";position:absolute;inset:0;background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 1px, transparent 1px 3px);}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 22px}
+
+  /* hero */
+  .hero{min-height:78vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 0 40px}
+  .hero img{width:88px;height:88px;border-radius:22px;box-shadow:0 24px 80px rgba(45,212,230,.28), 0 2px 0 rgba(255,255,255,.06) inset;margin-bottom:26px}
+  .kicker{font-size:.82rem;letter-spacing:.35em;color:var(--teal);font-weight:700;margin-bottom:14px}
+  h1{font-size:clamp(2.1rem,6vw,3.4rem);font-weight:800;line-height:1.25;letter-spacing:-.01em}
+  h1 .grad{background:linear-gradient(90deg,#7ce7f2,#2dd4e6 45%,#7c9cf5);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:clamp(1rem,2.4vw,1.15rem);line-height:1.9;max-width:640px;margin:18px auto 34px}
+  .ctas{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .btn{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:1.02rem;
+       padding:15px 26px;border-radius:999px;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:#fff;color:#0a0d12;box-shadow:0 10px 34px rgba(255,255,255,.16)}
+  .btn-primary:hover{box-shadow:0 14px 44px rgba(255,255,255,.24)}
+  .btn-ghost{background:var(--glass);color:var(--ink);border:1px solid var(--hairline);backdrop-filter:blur(14px)}
+  .btn-ghost:hover{background:var(--glass-2)}
+  .btn svg{width:20px;height:20px;flex:none}
+
+  /* feature strip */
+  .feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:26px 0 70px}
+  .feat{background:var(--glass);border:1px solid var(--hairline);border-radius:16px;padding:16px 14px;text-align:center;backdrop-filter:blur(14px)}
+  .feat b{display:block;font-size:.95rem;margin-bottom:4px}
+  .feat span{color:var(--muted);font-size:.8rem;line-height:1.6}
+
+  /* platform cards */
+  .plats{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:18px;margin-bottom:70px}
+  .plat{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+        border:1px solid var(--hairline);border-radius:24px;padding:30px 26px;overflow:hidden;backdrop-filter:blur(16px)}
+  .plat::before{content:"";position:absolute;inset:-1px;border-radius:24px;padding:1px;
+        background:linear-gradient(140deg,rgba(45,212,230,.5),transparent 40%);
+        -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  .plat h2{font-size:1.35rem;font-weight:800;display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .plat h2 svg{width:26px;height:26px;color:var(--teal)}
+  .plat p{color:var(--muted);font-size:.95rem;line-height:1.9;margin-bottom:18px}
+  ol.steps{list-style:none;counter-reset:s;margin-bottom:24px}
+  ol.steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;color:var(--muted);font-size:.9rem;line-height:1.8;padding:7px 0}
+  ol.steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-radius:50%;
+        background:var(--glass-2);border:1px solid var(--hairline);color:var(--teal);font-weight:700;font-size:.8rem;
+        display:flex;align-items:center;justify-content:center;margin-top:2px}
+  ol.steps b{color:var(--ink)}
+  .plat .btn{width:100%;justify-content:center}
+  code{background:rgba(0,0,0,.35);border:1px solid var(--hairline);border-radius:8px;padding:2px 8px;font-size:.82rem;color:var(--teal);direction:ltr;display:inline-block;word-break:break-all}
+
+  footer{border-top:1px solid var(--hairline);padding:30px 0 46px;color:var(--muted);font-size:.83rem;text-align:center;line-height:2}
+  footer a{color:var(--teal);text-decoration:none}
+  @media (max-width:520px){ .hero{min-height:70vh} }
 </style>
 </head>
 <body>
-  <img class="logo" src="app/icons/icon-512.png" alt="OwnTV">
-  <h1>OwnTV — مشغّل IPTV</h1>
-  <p class="tag">شغّل اشتراك Xtream أو قوائم M3U الخاصة بك — بجودة 4K وبدون إعلانات<br>المشغّل لا يوفّر أي قنوات أو محتوى؛ أنت تضيف اشتراكك الخاص.</p>
+<div class="aurora"></div>
 
-  <div class="cards">
-    <div class="card">
-      <h2>📺 على Fire TV / Android TV</h2>
-      <p>التطبيق الكامل: بث مباشر وأفلام ومسلسلات، دليل قنوات EPG، مشاهدة ما فات، محرّكا تشغيل، ودعم 4K HDR.</p>
-      <div class="steps">
-        <b>على Fire TV:</b><br>
-        1. فعّل <b>Apps from Unknown Sources</b> من إعدادات الجهاز<br>
-        2. نزّل تطبيق <b>Downloader</b> من متجر أمازون<br>
-        3. افتح فيه رابط هذه الصفحة واضغط زر التحميل
-      </div>
-      <a class="btn btn-teal" href="https://github.com/ahXN00/OwnTV/releases/latest/download/OwnTV.apk">⬇️ تحميل التطبيق (APK)</a>
+<div class="wrap">
+  <section class="hero">
+    <img src="app/icons/icon-512.png" alt="OwnTV">
+    <div class="kicker">O W N T V</div>
+    <h1>سينما بيتك،<br><span class="grad">باشتراكك أنت.</span></h1>
+    <p class="sub">مشغّل IPTV فاخر لاشتراكات Xtream وقوائم M3U — جودة 4K HDR، بدون إعلانات، وبدون تتبّع.
+    المشغّل لا يوفّر أي قنوات؛ أنت تضيف اشتراكك الخاص.</p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="https://github.com/ahXN00/OwnTV/releases/latest/download/OwnTV.apk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        تحميل لـ Fire TV (APK)
+      </a>
+      <a class="btn btn-ghost" href="app/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>
+        فتح تطبيق الايفون
+      </a>
+    </div>
+  </section>
+
+  <section class="feats">
+    <div class="feat"><b>4K HDR</b><span>عرض مباشر بفك تشفير عتادي</span></div>
+    <div class="feat"><b>محرّكان للتشغيل</b><span>ExoPlayer للمباشر · mpv للأفلام</span></div>
+    <div class="feat"><b>دليل EPG</b><span>مشاهدة ما فات حتى 7 أيام</span></div>
+    <div class="feat"><b>مفتوح المصدر</b><span>GPLv3 · بدون إعلانات أو تتبّع</span></div>
+  </section>
+
+  <section class="plats">
+    <div class="plat">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2.5"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+        على Fire TV / Android TV
+      </h2>
+      <p>التطبيق الكامل: بث مباشر وأفلام ومسلسلات، تصنيفات ومفضلة، دليل قنوات، ومشاهدة ما فات.</p>
+      <ol class="steps">
+        <li>فعّل <b>Apps from Unknown Sources</b> من إعدادات الجهاز</li>
+        <li>نزّل تطبيق <b>Downloader</b> من متجر أمازون</li>
+        <li>افتح فيه رابط هذه الصفحة واضغط زر التحميل — وبعدها <b>Install</b></li>
+      </ol>
+      <a class="btn btn-primary" href="https://github.com/ahXN00/OwnTV/releases/latest/download/OwnTV.apk">⬇ تحميل التطبيق (APK)</a>
     </div>
 
-    <div class="card">
-      <h2>📱 على الايفون / الايباد</h2>
-      <p>نسخة ويب خفيفة تعمل بالمتصفح: سجّل دخولك ببيانات Xtream وشاهد القنوات والأفلام مباشرة، وأضفها لشاشتك الرئيسية كتطبيق.</p>
-      <div class="steps">
-        <b>للتثبيت على الشاشة الرئيسية:</b><br>
-        1. افتح التطبيق بمتصفح Safari<br>
-        2. اضغط زر المشاركة <b>⎋</b> أسفل الشاشة<br>
-        3. اختر <b>Add to Home Screen</b>
-      </div>
-      <a class="btn btn-outline" href="app/">▶️ فتح تطبيق الويب</a>
+    <div class="plat">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>
+        على الايفون / الايباد
+      </h2>
+      <p>نسخة ويب أنيقة وخفيفة: سجّل دخولك ببيانات Xtream وشاهد القنوات والأفلام مباشرة من المتصفح.</p>
+      <ol class="steps">
+        <li>افتح التطبيق بمتصفح <b>Safari</b></li>
+        <li>اضغط زر المشاركة ثم <b>Add to Home Screen</b></li>
+        <li>افتحه من الشاشة الرئيسية كتطبيق مستقل</li>
+      </ol>
+      <a class="btn btn-ghost" href="app/">▶ فتح تطبيق الويب</a>
     </div>
-  </div>
+  </section>
+</div>
 
-  <p class="note">
+<footer>
+  <div class="wrap">
     مشروع مفتوح المصدر مرخّص GPLv3 — المشغّل الأصلي: <a href="https://github.com/ahXN00/OwnTV">OwnTV</a>
     · المستودع: <a href="https://github.com/mohammadhaci/Iptv">mohammadhaci/Iptv</a>
-    · <a href="https://github.com/mohammadhaci/Iptv/blob/claude/iptv-player-fire-tv-jnjwkn/README.ar.md">الدليل الكامل بالعربية</a>
-  </p>
+    · <a href="https://github.com/mohammadhaci/Iptv/blob/claude/iptv-player-fire-tv-jnjwkn/README.ar.md">الدليل بالعربية</a>
+  </div>
+</footer>
 </body>
 </html>

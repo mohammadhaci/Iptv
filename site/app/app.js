@@ -114,6 +114,20 @@ function setStatus(text) {
   $('content').innerHTML = `<div id="status">${esc(text)}</div>`;
 }
 
+const svgIcon = (id) => `<svg class="icon" viewBox="0 0 24 24"><use href="#${id}"/></svg>`;
+
+function showSkeleton() {
+  const c = $('content');
+  if (S.tab === 'live') {
+    c.innerHTML = '<div class="skel skel-row"></div>'.repeat(8);
+  } else {
+    c.innerHTML = `<div class="grid">${'<div class="skel skel-poster"></div>'.repeat(12)}</div>`;
+  }
+}
+function showCatSkeleton() {
+  $('cats').innerHTML = '<div class="skel skel-chip"></div>'.repeat(6);
+}
+
 document.querySelectorAll('nav button').forEach((b) => {
   b.onclick = () => switchTab(b.dataset.tab);
 });
@@ -126,7 +140,8 @@ async function switchTab(tab, force) {
   $('searchInput').value = '';
   $('cats').innerHTML = '';
   if (tab === 'fav') { renderFavs(); return; }
-  setStatus('جارِ تحميل التصنيفات…');
+  showCatSkeleton();
+  showSkeleton();
   const action = { live: 'get_live_categories', vod: 'get_vod_categories', series: 'get_series_categories' }[tab];
   try {
     S.cats = await api({ action }) || [];
@@ -154,7 +169,7 @@ function renderCats() {
 async function selectCat(catId) {
   S.activeCat = catId;
   document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('active', c.dataset.id == catId));
-  setStatus('جارِ التحميل…');
+  showSkeleton();
   const action = { live: 'get_live_streams', vod: 'get_vod_streams', series: 'get_series' }[S.tab];
   try {
     S.items = await api({ action, category_id: catId }) || [];
@@ -182,12 +197,18 @@ function renderItems(items) {
 function liveRow(ch) {
   const row = document.createElement('div');
   row.className = 'row';
-  const img = document.createElement('img');
-  img.loading = 'lazy'; img.src = ch.stream_icon || ''; img.onerror = () => (img.style.visibility = 'hidden');
+  const logo = document.createElement('div');
+  logo.className = 'logo';
+  if (ch.stream_icon) {
+    const img = document.createElement('img');
+    img.loading = 'lazy'; img.src = ch.stream_icon;
+    img.onerror = () => { img.remove(); logo.innerHTML = svgIcon('i-tv'); };
+    logo.appendChild(img);
+  } else logo.innerHTML = svgIcon('i-tv');
   const name = document.createElement('div');
   name.className = 'name'; name.textContent = ch.name;
   const fav = favBtn('live', ch.stream_id, { name: ch.name, stream_id: ch.stream_id, stream_icon: ch.stream_icon });
-  row.append(img, name, fav);
+  row.append(logo, name, fav);
   row.onclick = (e) => { if (e.target !== fav) play('live', ch.stream_id, ch.name); };
   return row;
 }
@@ -200,11 +221,12 @@ function posterCard(it, kind) {
   div.className = 'poster';
   const box = document.createElement('div');
   box.className = 'imgbox';
+  const fallbackIcon = svgIcon(isSeries ? 'i-series' : 'i-film');
   if (cover) {
     const img = document.createElement('img');
-    img.loading = 'lazy'; img.src = cover; img.onerror = () => { img.remove(); box.textContent = isSeries ? '🎞️' : '🎬'; };
+    img.loading = 'lazy'; img.src = cover; img.onerror = () => { img.remove(); box.innerHTML = fallbackIcon; };
     box.appendChild(img);
-  } else box.textContent = isSeries ? '🎞️' : '🎬';
+  } else box.innerHTML = fallbackIcon;
   const nm = document.createElement('div');
   nm.className = 'pname'; nm.textContent = it.name;
   const fav = favBtn(kind, id, isSeries
