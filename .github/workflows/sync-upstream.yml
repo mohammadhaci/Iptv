@@ -53,3 +53,25 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run android.yml --ref "$GITHUB_REF_NAME"
+
+      # When upstream publishes an official release, mirror its tag here so android.yml
+      # builds and publishes this fork's own signed release — which the installed app's
+      # in-app updater (pointed at this repo) then offers on the TV.
+      - name: Mirror upstream release tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LATEST=$(gh api repos/ahXN00/OwnTV/releases/latest --jq .tag_name || true)
+          if [ -z "$LATEST" ]; then
+            echo "Could not read upstream latest release — skipping."
+            exit 0
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/$LATEST" >/dev/null 2>&1; then
+            echo "Tag $LATEST already exists here — nothing to do."
+            exit 0
+          fi
+          echo "Mirroring upstream release $LATEST"
+          git tag "$LATEST"
+          git push origin "refs/tags/$LATEST"
+          # Tag pushes made with GITHUB_TOKEN don't auto-trigger workflows — dispatch explicitly.
+          gh workflow run android.yml --ref "refs/tags/$LATEST"

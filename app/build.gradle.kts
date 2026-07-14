@@ -14,7 +14,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = "tv.own.owntv"
+        // Distinct id so this personal build installs alongside the original OwnTV
+        // (different signing key would otherwise block installing over it).
+        applicationId = "tv.own.owntv.plus"
         minSdk = 26
         targetSdk = 36
         // CI injects these from the git tag (see .github/workflows/android.yml) so releases never

@@ -139,6 +139,7 @@ class UpdateManager(
     }
 
     companion object {
-        const val REPO = "ahXN00/OwnTV"
+        // This fork's own releases (built by its CI from the weekly upstream sync).
+        const val REPO = "mohammadhaci/Iptv"
     }
 }

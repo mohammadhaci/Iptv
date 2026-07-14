@@ -129,16 +129,34 @@ https://github.com/ahXN00/OwnTV/releases/latest/download/OwnTV.apk
 
 ---
 
-## 📦 نسخة APK من مستودعك أنت (تلقائي)
+## 📦 نسختك الخاصة عالتلفزيون: OwnTV+
 
-هذا المستودع فيه GitHub Actions جاهز: **كل تعديل بتدفعه بيبني APK تلقائيًا**.
+هذا المستودع بيبني **نسخة خاصة** من التطبيق اسمها **OwnTV+**:
 
-- النتيجة بتلاقيها بصفحة [**Actions**](https://github.com/mohammadhaci/Iptv/actions) ← افتح آخر run ناجح ← نزّل الـ APK من قسم **Artifacts**
-- للاستخدام اليومي الأفضل تظل على [النسخة الرسمية الموقّعة](https://github.com/ahXN00/OwnTV/releases/latest/download/OwnTV.apk) لأنها بتتحدث تلقائيًا من داخل التطبيق — نسخة مستودعك مفيدة إذا حبيت تعدّل شي بالكود
+- معرّف تطبيق مختلف (`tv.own.owntv.plus`) — بتنزل **جنب** نسخة OwnTV الأصلية بدون أي تعارض
+- المحدّث الداخلي فيها بيتابع **إصدارات هذا المستودع** (مش المشروع الأصلي)
+- رابط التثبيت عبر Downloader على Fire TV:
 
-### التحديث من المشروع الأصلي
+```
+https://github.com/mohammadhaci/Iptv/releases/latest/download/OwnTV.apk
+```
 
-المستودع بيسحب تحديثات المشروع الأصلي **تلقائيًا كل أسبوع** (workflow باسم `Sync upstream`). وتقدر تشغّله يدويًا بأي وقت: صفحة **Actions ← Sync upstream (OwnTV) ← Run workflow**.
+### دورة التحديث الكاملة (تلقائية)
+
+1. المطوّر الأصلي يصدر نسخة رسمية جديدة (مثلًا v4.2.0)
+2. المزامنة الأسبوعية (`Sync upstream`) تسحب الكود الجديد **وتنشئ نفس الـ tag هنا تلقائيًا**
+3. الـ CI يبني إصدار OwnTV+ موقّعًا وينشره بصفحة [إصدارات هذا المستودع](https://github.com/mohammadhaci/Iptv/releases)
+4. OwnTV+ المثبّت عالتلفزيون يكتشف الإصدار ويعرض التحديث بضغطة زر
+
+وتقدر تسرّع الدورة بأي وقت: **Actions ← Sync upstream (OwnTV) ← Run workflow**.
+
+### شرط التشغيل الوحيد (مرة واحدة): أسرار التوقيع
+
+حتى تكون الإصدارات موقّعة بمفتاح ثابت (وبالتالي التحديثات تتركب فوق بعضها بدون حذف)، لازم تضيف 4 أسرار
+بـ **Settings ← Secrets and variables ← Actions**: `KEYSTORE_BASE64` و`KEYSTORE_PASSWORD` و`KEY_ALIAS` و`KEY_PASSWORD`.
+(بدونها الـ CI يبني نسخ debug بتوقيع عشوائي — بتشتغل بس كل تحديث يتطلب حذف وإعادة تثبيت.)
+
+- أي push بيبني كمان APK تجريبي بتلاقيه بقسم **Artifacts** بصفحة [Actions](https://github.com/mohammadhaci/Iptv/actions)
 
 ---
 
