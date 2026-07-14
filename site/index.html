@@ -74,6 +74,18 @@
   footer{border-top:1px solid var(--hairline);padding:30px 0 46px;color:var(--muted);font-size:.83rem;text-align:center;line-height:2}
   footer a{color:var(--teal);text-decoration:none}
   @media (max-width:520px){ .hero{min-height:70vh} }
+
+  /* 10-foot UI — TV screens (e.g. the Downloader browser on Fire TV) */
+  a:focus-visible,.btn:focus-visible{outline:3px solid var(--teal);outline-offset:4px;border-radius:999px}
+  @media (min-width:1600px){
+    html{font-size:22px}
+    .wrap{max-width:1460px}
+    .hero img{width:116px;height:116px;border-radius:28px}
+    .btn{padding:19px 36px}
+    .feat{padding:22px 18px;border-radius:20px}
+    .plat{padding:38px 34px}
+    code{font-size:.9rem;padding:4px 12px}
+  }
 </style>
 </head>
 <body>
