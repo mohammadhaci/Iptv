@@ -44,6 +44,7 @@ import tv.own.owntv.core.sync.syncProgressCountsLabel
 import tv.own.owntv.core.sync.work.CatalogSyncState
 import tv.own.owntv.features.settings.data.PlaylistAutoRefresh
 import tv.own.owntv.features.setup.AddSourceScreen
+import tv.own.owntv.features.setup.StalkerTestUi
 import tv.own.owntv.ui.components.OwnTVButton
 import tv.own.owntv.ui.components.dialogPanel
 import tv.own.owntv.ui.components.OwnTVButtonStyle
@@ -60,6 +61,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val progress by vm.progress.collectAsStateWithLifecycle()
     val playlistAutoRefresh by vm.playlistAutoRefresh.collectAsStateWithLifecycle()
     val defaultId by vm.defaultSourceId.collectAsStateWithLifecycle()
+    val sourceExpiry by vm.sourceExpiry.collectAsStateWithLifecycle()
     val deletingIds by vm.deletingSourceIds.collectAsStateWithLifecycle()
     val epgSync by vm.epgSync.collectAsStateWithLifecycle()
     val colors = OwnTVTheme.colors
@@ -90,6 +92,14 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         }
     }
 
+    val stalkerTest by vm.stalkerTest.collectAsStateWithLifecycle()
+    val stalkerTestUi = when (val t = stalkerTest) {
+        SettingsViewModel.StalkerTestState.Idle -> StalkerTestUi.Idle
+        SettingsViewModel.StalkerTestState.Testing -> StalkerTestUi.Testing
+        is SettingsViewModel.StalkerTestState.Ok -> StalkerTestUi.Ok(t.summary)
+        is SettingsViewModel.StalkerTestState.Failed -> StalkerTestUi.Failed(t.message)
+    }
+
     editingSource?.let { src ->
         AddSourceScreen(
             initial = src,
@@ -100,7 +110,14 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 editingSource = null
             },
             onStartM3u = { n, url, ua, epg, autoRefresh, isDefault -> vm.updateSource(src.id, n, url, "", "", ua, epg, autoRefresh, isDefault); editingSource = null },
-            onBack = { editingSource = null },
+            onStartStalker = { n, url, mac, ua, autoRefresh, isDefault ->
+                vm.updateSource(src.id, n, url, "", "", ua, "", autoRefresh, isDefault, mac = mac)
+                vm.resetStalkerTest()
+                editingSource = null
+            },
+            onTestStalker = { url, mac, ua -> vm.testStalker(url, mac, ua) },
+            stalkerTest = stalkerTestUi,
+            onBack = { vm.resetStalkerTest(); editingSource = null },
             modifier = modifier,
         )
         return
@@ -113,9 +130,15 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     vm.addXtream(n, server, u, p, ua, epg, autoRefresh, live, movies, series, isDefault)
                 },
                 onStartM3u = { n, url, ua, epg, autoRefresh, isDefault -> vm.addM3u(n, url, ua, epg, autoRefresh, isDefault) },
+                onStartStalker = { n, url, mac, ua, autoRefresh, isDefault ->
+                    vm.resetStalkerTest()
+                    vm.addStalker(n, url, mac, ua, autoRefresh, isDefault)
+                },
+                onTestStalker = { url, mac, ua -> vm.testStalker(url, mac, ua) },
+                stalkerTest = stalkerTestUi,
                 // A newly-added playlist can be made default only when others already exist.
                 showDefaultToggle = sources.isNotEmpty(),
-                onBack = { showAdd = false },
+                onBack = { vm.resetStalkerTest(); showAdd = false },
                 modifier = modifier,
                 initial = vm.lastFailedSource, // pre-fill on retry — no re-typing after a typo
             )
@@ -201,6 +224,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                         source = source,
                         autoRefresh = playlistAutoRefresh[source.id] ?: PlaylistAutoRefresh.OFF,
                         isDefault = isDefault,
+                        expiry = sourceExpiry[source.id],
                         counts = counts,
                         syncState = syncState,
                         isDeleting = source.id in deletingIds,
@@ -229,6 +253,7 @@ private fun SourceRow(
     source: SourceEntity,
     autoRefresh: PlaylistAutoRefresh,
     isDefault: Boolean,
+    expiry: String?,
     counts: SyncCounts?,
     syncState: CatalogSyncState,
     isDeleting: Boolean,
@@ -277,8 +302,10 @@ private fun SourceRow(
             }
             Text(
                 buildString {
-                    append(when (source.type) { SourceType.XTREAM -> "Xtream • ${source.url}"; SourceType.M3U -> "M3U • ${source.url}"; SourceType.LOCAL_BACKUP -> "Backup" })
+                    append(when (source.type) { SourceType.XTREAM -> "Xtream • ${source.url}"; SourceType.M3U -> "M3U • ${source.url}"; SourceType.STALKER -> "Stalker • ${source.url}"; SourceType.LOCAL_BACKUP -> "Backup" })
                     if (autoRefresh != PlaylistAutoRefresh.OFF) append("  •  ⟳ ${autoRefresh.label}")
+                    // Subscription expiry (Phase F): Xtream user_info.exp_date / Stalker account_info.
+                    if (!expiry.isNullOrBlank()) append("  •  Expires $expiry")
                     val visibleCounts = if (activeSync == null) counts?.breakdown else activeCountsLabel
                     if (!visibleCounts.isNullOrBlank()) {
                         append("  •  $visibleCounts")
@@ -342,6 +369,15 @@ private fun CatalogSyncState.Syncing.countsLabel(sourceType: SourceType, stored:
             liveActive = false,
             moviesActive = false,
             seriesActive = false,
+        )
+        // Stalker: LIVE (Phase C-1) + VOD/series (Phase D-1) all populate.
+        SourceType.STALKER -> SyncProgressCounts(
+            live = live,
+            movies = movies,
+            series = series,
+            liveActive = liveActive || live > 0,
+            moviesActive = moviesActive || movies > 0,
+            seriesActive = seriesActive || series > 0,
         )
     }
     return syncProgressCountsLabel(counts)

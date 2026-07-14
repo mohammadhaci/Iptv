@@ -82,6 +82,7 @@ private enum class PlayerMode { NONE, FULLSCREEN, MINI }
 @Composable
 fun OwnTVShell(
     selectedSection: MainSection,
+    visibleSections: Set<MainSection>,
     onSelectSection: (MainSection) -> Unit,
     themeMode: ThemeMode,
     uiZoomPercent: Int,
@@ -289,6 +290,7 @@ fun OwnTVShell(
             Sidebar(
                 selected = selectedSection,
                 onSelect = onSelectSection,
+                visibleSections = visibleSections,
                 avatarId = avatarId,
                 onPickAvatar = { showAvatarPicker = true },
                 profileName = profileName,
