@@ -48,11 +48,13 @@ jobs:
             echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      # --repo is required on every gh call: the checkout has an "upstream" remote,
+      # which gh would otherwise resolve as the target repo (403 on dispatch).
       - name: Build the updated APK
         if: steps.merge.outputs.pushed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run android.yml --ref "$GITHUB_REF_NAME"
+        run: gh workflow run android.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME"
 
       # When upstream publishes an official release, mirror its tag here so android.yml
       # builds and publishes this fork's own signed release — which the installed app's
@@ -74,4 +76,4 @@ jobs:
           git tag "$LATEST"
           git push origin "refs/tags/$LATEST"
           # Tag pushes made with GITHUB_TOKEN don't auto-trigger workflows — dispatch explicitly.
-          gh workflow run android.yml --ref "refs/tags/$LATEST"
+          gh workflow run android.yml --repo "$GITHUB_REPOSITORY" --ref "refs/tags/$LATEST"

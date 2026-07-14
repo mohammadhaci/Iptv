@@ -38,7 +38,7 @@
 - افتح Downloader واكتب هذا الرابط:
 
 ```
-https://github.com/ahXN00/OwnTV/releases/latest/download/OwnTV.apk
+https://github.com/mohammadhaci/Iptv/releases/latest/download/OwnTV.apk
 ```
 
 - بعد التنزيل اضغط **Install** ثم **Open**
